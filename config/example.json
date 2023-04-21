@@ -1,0 +1,7 @@
+{
+    "app_name": "tonyandre.co portfolio website",
+    "app_env": "development",
+    "app_port": 4000,
+    "app_host": "localhost",
+    "README": "Look at the Config struct in config.go for more info"
+}
