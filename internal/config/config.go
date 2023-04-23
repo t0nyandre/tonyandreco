@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 
 	"github.com/gookit/validate"
+	"github.com/rs/zerolog"
 )
 
 const (
@@ -29,7 +30,7 @@ func (c *Config) Validate() error {
 	return v.Errors
 }
 
-func Load(file string) (*Config, error) {
+func Load(file string, l *zerolog.Logger) *Config {
 	c := &Config{
 		Port:        defaultAppPort,
 		Hostname:    defaultAppHost,
@@ -39,16 +40,16 @@ func Load(file string) (*Config, error) {
 
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
-		return nil, err
+		l.Error().Err(err).Msg("failed to read config file")
 	}
 	if err = json.Unmarshal(bytes, c); err != nil {
-		return nil, err
+		l.Error().Err(err).Msg("failed to unmarshal config file")
 	}
 
 	if err = c.Validate(); err != nil {
-		return nil, err
+		l.Error().Err(err).Msg("failed to validate config file")
 	}
 
-	return c, nil
+	return c
 
 }

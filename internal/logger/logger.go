@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
-	"github.com/t0nyandre/tonyandreco/internal/config"
 )
 
-func New(cfg *config.Config) (*zerolog.Logger, error) {
+func New() *zerolog.Logger {
 	dateString := time.Now().Format("20060102")
 
 	file, err := os.OpenFile(
@@ -18,14 +17,13 @@ func New(cfg *config.Config) (*zerolog.Logger, error) {
 		0664,
 	)
 	if err != nil {
-		return nil, err
+		panic(fmt.Errorf("error appending or creating file for logging: %v", err))
 	}
 
 	multi := zerolog.MultiLevelWriter(os.Stdout, file)
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
-	logger := zerolog.New(multi).With().Timestamp().Str("app_name", cfg.Name).Logger()
+	logger := zerolog.New(multi).With().Timestamp().Logger()
 
-	logger.Debug().Msg("logger created")
-	return &logger, nil
+	return &logger
 }
