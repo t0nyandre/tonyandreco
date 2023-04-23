@@ -14,15 +14,11 @@ const (
 	defaultAppName = "tonyandreco"
 )
 
-type Default struct {
-	AppPort int    `json:"app_port" env:"APP_PORT" validate:"required|numeric"`
-	AppHost string `json:"app_host" env:"APP_HOST" validate:"required|string"`
-	AppEnv  string `json:"app_env" env:"APP_ENV" validate:"required|string"`
-	AppName string `json:"app_name" env:"APP_NAME" validate:"required|string"`
-}
-
 type Config struct {
-	Defaults *Default `json:"defaults"`
+	Port        int    `json:"port" env:"APP_PORT" validate:"required|numeric"`
+	Hostname    string `json:"hostname" env:"APP_HOST" validate:"required|string"`
+	Environment string `json:"environment" env:"APP_ENV" validate:"required|string"`
+	Name        string `json:"name" env:"APP_NAME" validate:"required|string"`
 }
 
 func (c *Config) Validate() error {
@@ -34,20 +30,18 @@ func (c *Config) Validate() error {
 }
 
 func Load(file string) (*Config, error) {
-	c := Config{
-		Defaults: &Default{
-			AppPort: defaultAppPort,
-			AppHost: defaultAppHost,
-			AppEnv:  defaultAppEnv,
-			AppName: defaultAppName,
-		},
+	c := &Config{
+		Port:        defaultAppPort,
+		Hostname:    defaultAppHost,
+		Environment: defaultAppEnv,
+		Name:        defaultAppName,
 	}
 
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
-	if err = json.Unmarshal(bytes, &c); err != nil {
+	if err = json.Unmarshal(bytes, c); err != nil {
 		return nil, err
 	}
 
@@ -55,6 +49,6 @@ func Load(file string) (*Config, error) {
 		return nil, err
 	}
 
-	return &c, nil
+	return c, nil
 
 }
