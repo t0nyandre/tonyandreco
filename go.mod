@@ -3,6 +3,7 @@ module github.com/t0nyandre/tonyandreco
 go 1.20
 
 require (
+	github.com/go-chi/chi/v5 v5.0.8
 	github.com/gookit/validate v1.4.6
 	github.com/rs/zerolog v1.29.1
 )
