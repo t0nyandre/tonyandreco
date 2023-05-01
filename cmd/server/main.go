@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/t0nyandre/tonyandreco/internal/config"
 	"github.com/t0nyandre/tonyandreco/internal/logger"
+	"github.com/t0nyandre/tonyandreco/internal/routes"
 )
 
 var appConfig = flag.String("config", "./config/dev.json", "path to config file")
@@ -17,15 +17,15 @@ func main() {
 
 	// Configurations, logger and json config
 	l := logger.New()
-	cfg := config.Load(*appConfig, l)
+	if err := config.Load(*appConfig); err != nil {
+		l.Fatal().Err(err).Msg("error loading config")
+	}
+	cfg := config.AppConfig
 
-	router := chi.NewRouter()
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World"))
-	})
+	r := routes.NewRouter(l)
 
 	l.Info().Msgf("Server listening on port %v", cfg.Port)
-	if err := http.ListenAndServe(fmt.Sprintf("%s:%v", cfg.Hostname, cfg.Port), router); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%v", cfg.Hostname, cfg.Port), r); err != nil {
 		l.Fatal().Err(err).Msg("error starting server")
 	}
 }
